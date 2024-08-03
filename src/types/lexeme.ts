@@ -1,5 +1,6 @@
 type TMeaning = {
   meaning: string;
+  context: string;
   explainations: string;
   example: string;
 };
@@ -10,8 +11,12 @@ type TLexeme = {
   lexeme: string;
   hiragana: string;
   hanviet: string;
+  is_master: boolean;
   approved: boolean;
   approved_at: string | null;
+  old_jlpt_level: number;
+  frequency_ranking: number;
+  word_origin: string;
   createdAt: string;
   updatedAt: string;
 };
