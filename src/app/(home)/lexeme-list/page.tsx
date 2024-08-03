@@ -1,5 +1,10 @@
 import { LexemeList } from "@/modules/lexeme-list";
+import { Suspense } from "react";
 
 export default function LemexeListPage() {
-  return <LexemeList />;
+  return (
+    <Suspense>
+      <LexemeList />
+    </Suspense>
+  );
 }

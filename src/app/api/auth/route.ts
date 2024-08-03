@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { access_token, expires_in, refresh_token, expires_at } = body.data;
 
-    if (!access_token || !refresh_token) {
+    if (!refresh_token) {
       return NextResponse.json({ message: "Invalid token!" });
     }
 

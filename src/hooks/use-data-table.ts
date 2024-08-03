@@ -10,6 +10,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type OnChangeFn,
+  type RowSelectionState,
   type ColumnDef,
   type ColumnFiltersState,
   type PaginationState,
@@ -119,6 +121,8 @@ interface UseDataTableProps<TData, TValue> {
       desc: boolean;
     }[];
   };
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
 }
 
 const searchParamsSchema = z.object({
@@ -134,6 +138,8 @@ export function useDataTable<TData, TValue>({
   filterFields = [],
   enableAdvancedFilter = false,
   state,
+  rowSelection,
+  onRowSelectionChange,
 }: UseDataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -201,7 +207,6 @@ export function useDataTable<TData, TValue>({
   }, [filterableColumns, searchableColumns, searchParams]);
 
   // Table states
-  const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] =
@@ -341,7 +346,7 @@ export function useDataTable<TData, TValue>({
       columnFilters,
     },
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: onRowSelectionChange,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

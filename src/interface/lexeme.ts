@@ -9,6 +9,8 @@ type TLexeme = {
   meaning: TMeaning[];
   id: string;
   lexeme: string;
+  standard: string;
+  part_of_speech: string[];
   hiragana: string;
   hanviet: string;
   is_master: boolean;
@@ -17,6 +19,4 @@ type TLexeme = {
   old_jlpt_level: number;
   frequency_ranking: number;
   word_origin: string;
-  createdAt: string;
-  updatedAt: string;
 };

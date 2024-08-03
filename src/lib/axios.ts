@@ -54,9 +54,7 @@ const responseInterceptor = async (error: any) => {
   const originalRequest = config;
   const oldRefreshToken = getCookie(REFRESH_TOKEN);
 
-  console.log("error.response?.status: ", error.response?.status);
   if (error.response?.status === 401) {
-    console.log("oldRefreshToken: ", oldRefreshToken);
     if (!oldRefreshToken) {
       useAppStore.getState().clearProfile();
       return Promise.reject(error);

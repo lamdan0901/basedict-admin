@@ -40,7 +40,7 @@ export function Login() {
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     startTransition(async () => {
       const res = await login(data);
-      setTokenServer(res.data);
+      await setTokenServer(res.data);
       setProfile(res.data.user);
       router.push("/");
     });

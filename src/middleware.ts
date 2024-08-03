@@ -4,15 +4,23 @@ import { ACCESS_TOKEN } from "@/constants";
 
 export function middleware(request: NextRequest) {
   const token = cookies().get(ACCESS_TOKEN)?.value;
-  console.log("token: ", token);
+  const path = request.nextUrl.pathname;
+
+  //!!! the problem is that when accessToken expires, it got deleted!!!
 
   if (token) {
-    return NextResponse.redirect(new URL("/", request.url));
+    if (path === "/login") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  } else {
+    if (path !== "/login") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/login"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
