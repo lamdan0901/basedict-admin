@@ -221,6 +221,14 @@ export function useDataTable<TData, TValue>({
       }
     );
 
+  // in case the searchParams change, update the table's pagination as well
+  React.useEffect(() => {
+    setPagination({
+      pageIndex: page - 1,
+      pageSize: per_page ?? 10,
+    });
+  }, [page, per_page]);
+
   const pagination = React.useMemo(
     () => ({
       pageIndex,

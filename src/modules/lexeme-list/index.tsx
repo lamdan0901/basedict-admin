@@ -9,45 +9,21 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useDataTable } from "@/hooks/use-data-table";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDataTable } from "@/hooks/useDataTable";
+import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { stringifyParams } from "@/lib/utils";
 import { DeleteLexemeModal } from "@/modules/lexeme-list/DeleteLexemeModal";
+import { EditMeaningModal } from "@/modules/lexeme-list/EditMeaningModal";
 import { UpsertLexemeModal } from "@/modules/lexeme-list/UpsertLexemeModal";
 import { getRequest } from "@/service/data";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import { ArrowUpDown, SquarePen, Trash2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
-
-const useUrlSearchParams = () => {
-  const router = useRouter();
-
-  const setSearchParam = useCallback(
-    (key: string, value: any) => {
-      const searchParams = new URLSearchParams(window.location.search);
-
-      if (value === null || value === undefined) {
-        searchParams.delete(key);
-      } else {
-        searchParams.set(key, value);
-      }
-
-      const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-      router.push(newUrl, {
-        scroll: false,
-      });
-    },
-    [router]
-  );
-
-  return setSearchParam;
-};
 
 export function LexemeList() {
   const searchParams = useSearchParams();
@@ -56,7 +32,9 @@ export function LexemeList() {
   const [idsSelected, selectedIds] = useState<string[]>([]);
   const [openUpsertModal, setOpenUpsertModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openEditMeaningModal, setOpenEditMeaningModal] = useState(false);
   const [selectedLexeme, setSelectedLexeme] = useState<TLexeme | null>(null);
+  const [searchText, setSearchText] = useState("");
 
   const search = searchParams.get("search") ?? "";
   const isMaster = searchParams.get("isMaster") ?? "all";
@@ -65,8 +43,6 @@ export function LexemeList() {
   const limit = Number(searchParams.get("per_page") ?? 10);
   const [sort, orderDirection] = searchParams.get("sort")?.split(".") ?? [];
 
-  const debouncedSearch = useDebounce(search, 400);
-
   // TODO: scroll only data table, not including header and footer
   // TODO: set active route for sidebar
   const { data, isLoading, mutate } = useSWR<{
@@ -74,7 +50,7 @@ export function LexemeList() {
     total: number;
   }>(
     `/v1/lexemes?${stringifyParams({
-      search: debouncedSearch,
+      search,
       offset,
       limit,
       sort,
@@ -239,7 +215,7 @@ export function LexemeList() {
       header: ({ column }) => {
         return (
           <div className="">
-            <Button variant="ghost" className="mx-auto" size={"sm"}>
+            <Button variant="ghost" size={"sm"}>
               Context
             </Button>
           </div>
@@ -259,7 +235,22 @@ export function LexemeList() {
         );
       },
       cell: ({ row }) => {
-        return <div className="pl-3">{row.original.meaning[0]?.meaning}</div>;
+        return (
+          <div className="pl-3 relative w-[200px]">
+            {row.original.meaning[0]?.meaning}
+            <Button
+              onClick={() => {
+                setSelectedLexeme(row.original);
+                setOpenEditMeaningModal(true);
+              }}
+              variant="ghost"
+              size={"sm"}
+              className="absolute top-1/2 -translate-y-1/2 -right-4 px-2"
+            >
+              <SquarePen className="w-5 h-5" />
+            </Button>
+          </div>
+        );
       },
     },
     {
@@ -280,22 +271,22 @@ export function LexemeList() {
         <div className="pl-3">{row.original.old_jlpt_level}</div>
       ),
     },
-    {
-      accessorKey: "word_origin",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            size={"sm"}
-            onClick={() => column.toggleSorting()}
-          >
-            Word Origin
-            {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div className="pl-3">{row.original.word_origin}</div>,
-    },
+    // {
+    //   accessorKey: "word_origin",
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         size={"sm"}
+    //         onClick={() => column.toggleSorting()}
+    //       >
+    //         Word Origin
+    //         {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
+    //       </Button>
+    //     );
+    //   },
+    //   cell: ({ row }) => <div className="pl-3">{row.original.word_origin}</div>,
+    // },
     {
       accessorKey: "frequency_ranking",
       header: ({ column }) => {
@@ -363,7 +354,7 @@ export function LexemeList() {
     onRowSelectionChange: setRowSelection,
     pageCount: calculateTotalPages(total, limit) || 0,
     state: {
-      pagination: { pageIndex: 0, pageSize: 10 },
+      pagination: { pageIndex: Number(offset) - 1, pageSize: limit },
     },
   });
 
@@ -372,7 +363,7 @@ export function LexemeList() {
     return Math.ceil(totalRecords / rowsPerPage);
   }
 
-  function afterDelete(articleIds: string[]) {
+  function afterDeleteIds(articleIds: string[]) {
     const articleIndexes = [1, 2, 3];
 
     setRowSelection((prev) => {
@@ -385,8 +376,6 @@ export function LexemeList() {
       prev.filter((currentId) => !articleIds.includes(currentId))
     );
   }
-
-  // ! chỉ test update trên những cái master false
 
   return (
     <div>
@@ -407,7 +396,9 @@ export function LexemeList() {
           <div className="flex gap-2 items-center">
             <label>Master type</label>
             <Select
-              onValueChange={(val) => setSearchParam("isMaster", val)}
+              onValueChange={(isMaster) => {
+                setSearchParam({ isMaster, page: 1 });
+              }}
               value={isMaster}
             >
               <SelectTrigger className="w-[125px]">
@@ -422,11 +413,12 @@ export function LexemeList() {
               </SelectContent>
             </Select>
           </div>
-
           <div className="flex gap-2 items-center">
             <label>Approve type</label>
             <Select
-              onValueChange={(val) => setSearchParam("isApproved", val)}
+              onValueChange={(isApproved) => {
+                setSearchParam({ isApproved, page: 1 });
+              }}
               value={isApproved}
             >
               <SelectTrigger className="w-[140px]">
@@ -441,33 +433,30 @@ export function LexemeList() {
               </SelectContent>
             </Select>
           </div>
-
           <Input
             className="w-[200px]"
-            value={search}
+            value={searchText}
             onChange={(e) => {
-              const searchText = e.target.value;
-              setSearchParam("search", searchText);
+              setSearchText(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setSearchParam({ search: searchText, page: 1 });
+              }
             }}
             type="search"
-            placeholder="Search..."
+            placeholder="Enter to search..."
           />
         </div>
       </div>
-      <div className="h-full overflow-auto">
-        {/* {isLoading ? (
-          <div className="mt-4 flex flex-col items-center justify-center text-black">
-            Loading...
-          </div>
-        ) : ( */}
-        <DataTable
-          table={table}
-          colSize={columns.length}
-          className="h-[calc(100vh-213px)] overflow-auto"
-          // TODO: scroll only data table, not including header and footer
-        />
-        {/* )} */}
-      </div>
+
+      <DataTable
+        table={table}
+        colSpan={columns.length}
+        isLoading={isLoading}
+        className="h-[calc(100vh-213px)] overflow-auto"
+        // TODO: scroll only data table, not including header and footer
+      />
 
       <UpsertLexemeModal
         lexeme={selectedLexeme}
@@ -477,6 +466,9 @@ export function LexemeList() {
           setSelectedLexeme(null);
         }}
         mutate={mutate}
+        onDeleteLexeme={() => {
+          setOpenDeleteModal(true);
+        }}
       />
 
       <DeleteLexemeModal
@@ -484,6 +476,19 @@ export function LexemeList() {
         open={openDeleteModal}
         onOpenChange={(open) => {
           setOpenDeleteModal(open);
+          setSelectedLexeme(null);
+          if (openUpsertModal) {
+            setOpenUpsertModal(false);
+          }
+        }}
+        mutate={mutate}
+      />
+
+      <EditMeaningModal
+        lexeme={selectedLexeme}
+        open={openEditMeaningModal}
+        onOpenChange={(open) => {
+          setOpenEditMeaningModal(open);
           setSelectedLexeme(null);
         }}
         mutate={mutate}
