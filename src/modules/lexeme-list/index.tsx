@@ -438,12 +438,13 @@ export function LexemeList() {
             value={searchText}
             onChange={(e) => {
               setSearchText(e.target.value);
+              setSearchParam({ search: e.target.value, page: 1 });
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setSearchParam({ search: searchText, page: 1 });
-              }
-            }}
+            // onKeyDown={(e) => {
+            //   if (e.key === "Enter") {
+            //     setSearchParam({ search: searchText, page: 1 });
+            //   }
+            // }}
             type="search"
             placeholder="Enter to search..."
           />

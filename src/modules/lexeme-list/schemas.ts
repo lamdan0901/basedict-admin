@@ -49,6 +49,7 @@ export const lexemeSchema = z.object({
     .string()
     .min(1, { message: "Part Of Speech is required" })
     .max(20, { message: "Part Of Speech must not exceed 20 characters" }),
+  similars: z.string(),
   is_master: z.boolean().default(false),
   approved: z.boolean().default(false),
 });

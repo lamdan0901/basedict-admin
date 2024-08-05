@@ -11,6 +11,7 @@ type TLexeme = {
   lexeme: string;
   standard: string;
   part_of_speech: string[];
+  similars: string[];
   hiragana: string;
   hanviet: string;
   is_master: boolean;

@@ -9,27 +9,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Controller,
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useSWRMutation from "swr/mutation";
-import { postRequest, patchRequest } from "@/service/data";
-import { Textarea } from "@/components/ui/textarea";
-import { Trash2 } from "lucide-react";
-import { v4 as uuid } from "uuid";
-import { useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { convertWordToHanViet } from "@/lib/utils";
+import { MeaningForm } from "@/modules/lexeme-list/MeaningForm";
 import {
   defaultFormValues,
   lexemeSchema,
   type TLexemeFormData,
 } from "@/modules/lexeme-list/schemas";
-import { useToast } from "@/components/ui/use-toast";
-import { MeaningForm } from "@/modules/lexeme-list/MeaningForm";
+import { patchRequest, postRequest } from "@/service/data";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import useSWRMutation from "swr/mutation";
+import { v4 as uuid } from "uuid";
 
 type UpsertLexemeModalProps = {
   lexeme: TLexeme | null;
@@ -82,6 +75,7 @@ export function UpsertLexemeModal({
     const part_of_speech = data.part_of_speech
       .split(",")
       .map((item) => item.trim());
+    const similars = data.similars.split(",").map((item) => item.trim());
 
     data.meaning.forEach((m) => {
       delete m.uuid;
@@ -93,10 +87,12 @@ export function UpsertLexemeModal({
         ? await lexemePatchTrigger({
             ...data,
             part_of_speech,
+            similars,
           })
         : await lexemePostTrigger({
             ...data,
             part_of_speech,
+            similars,
           });
 
       toast({
@@ -141,6 +137,7 @@ export function UpsertLexemeModal({
       reset({
         ...lexeme,
         part_of_speech: lexeme.part_of_speech.join(", "),
+        similars: lexeme.similars.join(", "),
         meaning: lexeme.meaning.map((m) => ({
           ...m,
           uuid: uuid(),
@@ -202,7 +199,10 @@ export function UpsertLexemeModal({
                     {...register("lexeme", {
                       onBlur: (e) => {
                         const val = e.target.value;
-                        if (val) setValue("standard", val);
+                        if (val) {
+                          setValue("standard", val);
+                          setValue("hanviet", convertWordToHanViet(val));
+                        }
                       },
                     })}
                   />
@@ -316,6 +316,17 @@ export function UpsertLexemeModal({
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="grid grid-rows-2 items-center relative">
+              <Label htmlFor="similars" className="text-left text-base">
+                Similars
+              </Label>
+              <Input
+                id="similars"
+                className="col-span-3"
+                {...register("similars")}
+              />
             </div>
 
             <DialogFooter className="sm:mt-6 fixed left-1/2 bottom-[20px] -translate-x-1/2 mt-3 sm:justify-center space-x-3 sm:space-x-6">
