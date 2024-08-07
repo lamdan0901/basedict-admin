@@ -1,9 +1,8 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import QueryString from "qs";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants";
 import { getCookie } from "@/lib/cookies";
-import { useAppStore } from "@/store/useAppStore";
 import { getRefreshToken, setTokenServer } from "@/service/auth";
+import { useAppStore } from "@/store/useAppStore";
+import axios, { AxiosError } from "axios";
 
 type IRequestCb = (token: string) => void;
 
@@ -64,12 +63,12 @@ const responseInterceptor = async (error: any) => {
       isRefreshing = true;
 
       try {
-        const data = await getRefreshToken(oldRefreshToken);
-        setTokenServer(data);
+        const res = await getRefreshToken(oldRefreshToken);
+        await setTokenServer(res);
 
         if (originalRequest.headers) {
-          originalRequest.headers.authorization = `Bearer ${data.access_token}`;
-          onRefreshed(data.access_token);
+          originalRequest.headers.authorization = `Bearer ${res.data.access_token}`;
+          onRefreshed(res.data.access_token);
           return axios(originalRequest);
         }
       } catch (error) {

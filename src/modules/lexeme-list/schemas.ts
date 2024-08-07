@@ -28,14 +28,14 @@ export const lexemeSchema = z.object({
   hiragana: z
     .string()
     .min(1, { message: "Hiragana is required" })
-    .max(10, { message: "Hiragana must not exceed 10 characters" }),
+    .max(25, { message: "Hiragana must not exceed 10 characters" }),
   hanviet: z
     .string()
     .min(1, { message: "Han Viet is required" })
-    .max(20, { message: "Han Viet must not exceed 20 characters" }),
+    .max(50, { message: "Han Viet must not exceed 20 characters" }),
   old_jlpt_level: z
     .number({ message: "Number format expected" })
-    .lte(10)
+    .lte(99)
     .gte(0),
   word_origin: z
     .string()
