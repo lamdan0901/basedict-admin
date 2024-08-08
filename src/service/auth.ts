@@ -18,7 +18,7 @@ const getRefreshToken = (refresh_token: string) => {
 
 const setTokenServer = async (data: object) => {
   try {
-    const res = await axios.post("http://localhost:3000/api/auth", { data });
+    const res = await axios.post("/api/auth", { data });
     return res;
   } catch (error) {
     console.log("errors", error);
