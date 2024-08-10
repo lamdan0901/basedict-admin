@@ -66,6 +66,18 @@ const Sidebar = () => {
           </span>
         </Link>
         <Link
+          href="/grammars"
+          className={cn(
+            "p-4 gap-2 flex items-center hover:bg-gray-200",
+            !isSidebarOpen ? "justify-center" : ""
+          )}
+        >
+          <Store />
+          <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
+            Grammar list
+          </span>
+        </Link>
+        <Link
           href="/account-list"
           className={cn(
             "p-4 gap-2 flex items-center hover:bg-gray-200",
