@@ -66,9 +66,9 @@ export function UpsertLexemeModal({
   } = form;
 
   const { trigger: lexemePostTrigger, isMutating: isPostingLexeme } =
-    useSWRMutation("/v1/lexemes", postRequest);
+    useSWRMutation("/v1/admin/lexemes", postRequest);
   const { trigger: lexemePatchTrigger, isMutating: isPatchingLexeme } =
-    useSWRMutation(`/v1/lexemes/${lexeme?.id}`, patchRequest);
+    useSWRMutation(`/v1/admin/lexemes/${lexeme?.id}`, patchRequest);
   const isMutating = isPostingLexeme || isPatchingLexeme;
 
   async function submitForm(data: TLexemeFormData) {

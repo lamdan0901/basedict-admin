@@ -27,7 +27,7 @@ export function DeleteLexemeModal({
 }: DeleteLexemeModalProps) {
   const { toast } = useToast();
   const { trigger: lexemeDeleteTrigger, isMutating: isDeletingLexeme } =
-    useSWRMutation(`/v1/lexemes/${lexeme?.id}`, deleteRequest);
+    useSWRMutation(`/v1/admin/lexemes/${lexeme?.id}`, deleteRequest);
 
   async function deleteLexeme() {
     try {

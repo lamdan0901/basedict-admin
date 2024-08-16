@@ -38,7 +38,7 @@ export function EditMeaningModal({
   const { handleSubmit, reset } = form;
 
   const { trigger: lexemePatchTrigger, isMutating: isPatchingLexeme } =
-    useSWRMutation(`/v1/lexemes/${lexeme?.id}`, patchRequest);
+    useSWRMutation(`/v1/admin/lexemes/${lexeme?.id}`, patchRequest);
 
   async function updateMeaning({ meaning }: { meaning: TMeaningFormData[] }) {
     try {
