@@ -16,6 +16,7 @@ type TLexeme = {
   hanviet: string;
   is_master: boolean;
   approved: boolean;
+  isChecked: boolean;
   approved_at: string | null;
   old_jlpt_level: number;
   frequency_ranking: number;

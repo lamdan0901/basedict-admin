@@ -185,6 +185,20 @@ export function UpsertLexemeModal({
                   </div>
                 )}
               />
+              <Controller
+                name="isChecked"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex w-full items-center space-x-2">
+                    <Switch
+                      id="isChecked"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="isChecked">Is Check</Label>
+                  </div>
+                )}
+              />
             </div>
 
             <div className="flex sm:flex-row flex-col gap-4 md:gap-x-12">

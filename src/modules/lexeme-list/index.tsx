@@ -39,6 +39,8 @@ export function LexemeList() {
   const search = searchParams.get("search") ?? "";
   const isMaster = searchParams.get("isMaster") ?? "all";
   const isApproved = searchParams.get("isApproved") ?? "all";
+  const isChecked = searchParams.get("isChecked") ?? "all";
+  const isMeaningExist = searchParams.get("isMeaningExist") ?? "all";
   const offset = searchParams.get("page") ?? 1;
   const limit = Number(searchParams.get("per_page") ?? 10);
   const [sort, orderDirection] = searchParams.get("sort")?.split(".") ?? [];
@@ -57,6 +59,8 @@ export function LexemeList() {
       orderDirection,
       isMaster: isMaster === "all" ? undefined : isMaster,
       isApproved: isApproved === "all" ? undefined : isApproved,
+      isChecked: isChecked === "all" ? undefined : isChecked,
+      isMeaningExist: isMeaningExist === "all" ? undefined : isMeaningExist,
     })}`,
     getRequest
   );
@@ -394,7 +398,6 @@ export function LexemeList() {
 
         <div className="flex gap-4">
           <div className="flex gap-2 items-center">
-            <label>Master type</label>
             <Select
               onValueChange={(isMaster) => {
                 setSearchParam({ isMaster, page: 1 });
@@ -414,7 +417,6 @@ export function LexemeList() {
             </Select>
           </div>
           <div className="flex gap-2 items-center">
-            <label>Approve type</label>
             <Select
               onValueChange={(isApproved) => {
                 setSearchParam({ isApproved, page: 1 });
@@ -429,6 +431,44 @@ export function LexemeList() {
                   <SelectItem value={"all"}>All</SelectItem>
                   <SelectItem value="true">Approved</SelectItem>
                   <SelectItem value="false">Not Approved</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 items-center">
+            <Select
+              onValueChange={(isChecked) => {
+                setSearchParam({ isChecked, page: 1 });
+              }}
+              value={isChecked}
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  <SelectItem value="true">IsChecked</SelectItem>
+                  <SelectItem value="false">Not Checked</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 items-center">
+            <Select
+              onValueChange={(isMeaningExist) => {
+                setSearchParam({ isMeaningExist, page: 1 });
+              }}
+              value={isMeaningExist}
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  <SelectItem value="true">isMeaningExist</SelectItem>
+                  <SelectItem value="false">Not MeaningExist</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

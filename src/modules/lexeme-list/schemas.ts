@@ -31,7 +31,6 @@ export const lexemeSchema = z.object({
     .max(25, { message: "Hiragana must not exceed 10 characters" }),
   hanviet: z
     .string()
-    .min(1, { message: "Han Viet is required" })
     .max(50, { message: "Han Viet must not exceed 20 characters" }),
   old_jlpt_level: z
     .number({ message: "Number format expected" })
@@ -47,11 +46,11 @@ export const lexemeSchema = z.object({
     .gte(0), //Freequenly Ranking
   part_of_speech: z
     .string()
-    .min(1, { message: "Part Of Speech is required" })
     .max(20, { message: "Part Of Speech must not exceed 20 characters" }),
   similars: z.string(),
   is_master: z.boolean().default(false),
   approved: z.boolean().default(false),
+  isChecked: z.boolean().default(false),
 });
 
 export type TMeaningFormData = z.infer<typeof meaningSchema>;
@@ -68,5 +67,6 @@ export const defaultFormValues = {
   part_of_speech: "-",
   is_master: false,
   approved: true,
+  isChecked: true,
   meaning: [],
 };
