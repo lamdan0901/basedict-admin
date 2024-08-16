@@ -49,7 +49,7 @@ export function LexemeList() {
     data: TLexeme[];
     total: number;
   }>(
-    `/v1/lexemes?${stringifyParams({
+    `/v1/admin/lexemes?${stringifyParams({
       search,
       offset,
       limit,
