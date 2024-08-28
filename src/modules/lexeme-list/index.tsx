@@ -45,8 +45,6 @@ export function LexemeList() {
   const limit = Number(searchParams.get("per_page") ?? 10);
   const [sort, orderDirection] = searchParams.get("sort")?.split(".") ?? [];
 
-  // TODO: scroll only data table, not including header and footer
-  // TODO: set active route for sidebar
   const { data, isLoading, mutate } = useSWR<{
     data: TLexeme[];
     total: number;
@@ -480,13 +478,8 @@ export function LexemeList() {
               setSearchText(e.target.value);
               setSearchParam({ search: e.target.value, page: 1 });
             }}
-            // onKeyDown={(e) => {
-            //   if (e.key === "Enter") {
-            //     setSearchParam({ search: searchText, page: 1 });
-            //   }
-            // }}
             type="search"
-            placeholder="Enter to search..."
+            placeholder="Search..."
           />
         </div>
       </div>
@@ -496,7 +489,6 @@ export function LexemeList() {
         colSpan={columns.length}
         isLoading={isLoading}
         className="h-[calc(100vh-213px)] overflow-auto"
-        // TODO: scroll only data table, not including header and footer
       />
 
       <UpsertLexemeModal

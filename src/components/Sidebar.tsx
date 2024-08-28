@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Album,
+  BookOpenText,
   CircleUserRound,
   House,
   LogOut,
   Menu,
+  NotebookPen,
   Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +26,7 @@ const Sidebar = () => {
   return (
     <aside
       className={`h-full shrink-0 bg-gray-100 relative shadow-lg ${
-        isSidebarOpen ? "w-64" : "w-16"
+        isSidebarOpen ? "w-52" : "w-16"
       } overflow-hidden transition-width duration-300`}
     >
       <div className="flex justify-end">
@@ -72,9 +74,21 @@ const Sidebar = () => {
             !isSidebarOpen ? "justify-center" : ""
           )}
         >
-          <Store />
+          <NotebookPen />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
             Grammar list
+          </span>
+        </Link>
+        <Link
+          href="/reading-list"
+          className={cn(
+            "p-4 gap-2 flex items-center hover:bg-gray-200",
+            !isSidebarOpen ? "justify-center" : ""
+          )}
+        >
+          <BookOpenText />
+          <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
+            Reading list
           </span>
         </Link>
         <Link

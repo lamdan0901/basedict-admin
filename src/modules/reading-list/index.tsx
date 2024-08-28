@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import DataTable from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,52 +9,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DataTable from "@/components/ui/data-table";
+import { Input } from "@/components/ui/input";
 import { useDataTable } from "@/hooks/useDataTable";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { stringifyParams } from "@/lib/utils";
-import { DeleteGrammarModal } from "@/modules/grammars/DeleteGrammarModal";
-import { UpsertGrammarModal } from "@/modules/grammars/UpsertGrammarModal";
+import { DeleteReadingModal } from "@/modules/reading-list/DeleteReadingModal";
+import { UpsertReadingModal } from "@/modules/reading-list/UpsertReadingModal";
 import { getRequest } from "@/service/data";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import { ArrowUpDown, SquarePen, Trash2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
+import { readingTypeMap } from "@/modules/reading-list/const";
 
-export function Grammars() {
+export function ReadingList() {
   const searchParams = useSearchParams();
   const setSearchParam = useUrlSearchParams();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [idsSelected, selectedIds] = useState<string[]>([]);
   const [openUpsertModal, setOpenUpsertModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedGrammar, setSelectedGrammar] = useState<TGrammar | null>(null);
+  const [selectedReading, setSelectedReading] = useState<TReading | null>(null);
   const [searchText, setSearchText] = useState("");
 
   const search = searchParams.get("search") ?? "";
-  const jlptLevel = searchParams.get("jlptLevel") ?? "all";
+  const isPublic = searchParams.get("isPublic") ?? "all";
   const offset = searchParams.get("page") ?? 1;
   const limit = Number(searchParams.get("per_page") ?? 10);
   const [sort, orderDirection] = searchParams.get("sort")?.split(".") ?? [];
 
   const { data, isLoading, mutate } = useSWR<{
-    data: TGrammar[];
+    data: TReading[];
     total: number;
   }>(
-    `/v1/grammars?${stringifyParams({
+    `/v1/admin/readings?${stringifyParams({
       search,
       offset,
       limit,
       sort,
       orderDirection,
-      jlptLevel: jlptLevel === "all" ? undefined : jlptLevel,
+      isPublic: isPublic === "all" ? undefined : isPublic,
     })}`,
     getRequest
   );
-  const grammarList = data?.data ?? [];
+  const readingList = data?.data ?? [];
   const total = data?.total ?? 0;
 
-  const columns: ColumnDef<TGrammar>[] = [
+  const columns: ColumnDef<TReading>[] = [
     {
       accessorKey: "action",
       header: ({ column }) => {
@@ -66,7 +66,7 @@ export function Grammars() {
         <div className="flex gap-2 w-[80px]">
           <Button
             onClick={() => {
-              setSelectedGrammar(row.original);
+              setSelectedReading(row.original);
               setOpenUpsertModal(true);
             }}
             variant="ghost"
@@ -77,7 +77,7 @@ export function Grammars() {
           </Button>
           <Button
             onClick={() => {
-              setSelectedGrammar(row.original);
+              setSelectedReading(row.original);
               setOpenDeleteModal(true);
             }}
             variant="ghost"
@@ -90,30 +90,52 @@ export function Grammars() {
       ),
     },
     {
-      accessorKey: "grammar",
+      accessorKey: "title",
       header: ({ column }) => {
         return (
           <div className="">
             <Button variant="ghost" size={"sm"}>
-              Grammar
+              Title
             </Button>
           </div>
         );
       },
-      cell: ({ row }) => <div className="pl-3">{row.original.grammar}</div>,
+      cell: ({ row }) => (
+        <div className="pl-3 min-w-[100px]">{row.original.title}</div>
+      ),
     },
     {
-      accessorKey: "meaning",
+      accessorKey: "content",
       header: ({ column }) => {
         return (
-          <div className="">
-            <Button variant="ghost" size={"sm"}>
-              Meaning
-            </Button>
-          </div>
+          <Button variant="ghost" size={"sm"}>
+            Content
+          </Button>
         );
       },
-      cell: ({ row }) => <div className="pl-3">{row.original.meaning}</div>,
+      cell: ({ row }) => (
+        <div className="max-w-[500px] truncate pl-3">
+          {row.original.japanese}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "readingType",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            size={"sm"}
+            onClick={() => column.toggleSorting()}
+          >
+            Reading Type
+            {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="pl-3">{readingTypeMap[row.original.readingType]}</div>
+      ),
     },
     {
       accessorKey: "jlptLevel",
@@ -124,17 +146,37 @@ export function Grammars() {
             size={"sm"}
             onClick={() => column.toggleSorting()}
           >
-            jlptLevel
+            Jlpt Level
             {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
           </Button>
         );
       },
       cell: ({ row }) => <div className="pl-3">{row.original.jlptLevel}</div>,
     },
+    {
+      accessorKey: "public",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            size={"sm"}
+            onClick={() => column.toggleSorting()}
+          >
+            Public
+            {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="pl-3">
+          {row.original.public ? "Public" : "Not Public"}
+        </div>
+      ),
+    },
   ];
 
   const { table } = useDataTable({
-    data: grammarList,
+    data: readingList,
     columns,
     rowSelection,
     onRowSelectionChange: setRowSelection,
@@ -149,59 +191,36 @@ export function Grammars() {
     return Math.ceil(totalRecords / rowsPerPage);
   }
 
-  function afterDeleteIds(articleIds: string[]) {
-    const articleIndexes = [1, 2, 3];
-
-    setRowSelection((prev) => {
-      articleIndexes.forEach((i) => {
-        delete prev[i];
-      });
-      return { ...prev };
-    });
-    selectedIds((prev) =>
-      prev.filter((currentId) => !articleIds.includes(currentId))
-    );
-  }
-
   return (
     <div>
       <div className="border-b my-4 pb-2">
-        <h2 className="text-xl font-semibold">Grammar list</h2>
+        <h2 className="text-xl font-semibold">Reading list</h2>
       </div>
       <div className="flex justify-between items-center mb-4 ">
         <div className="flex gap-4 items-center">
           <Button onClick={() => setOpenUpsertModal(true)} className="">
-            Add new Grammar
+            Add new Reading
           </Button>
-          {idsSelected.length > 0 && (
-            <Button variant={"destructive"}>Delete Grammar</Button>
-          )}
         </div>
 
         <div className="flex gap-4">
-          <div className="flex gap-2 items-center">
-            <label>Jlpt Level</label>
-            <Select
-              onValueChange={(jlptLevel) => {
-                setSearchParam({ jlptLevel, page: 1 });
-              }}
-              value={jlptLevel}
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="All" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
-                  <SelectItem value="N1">N1</SelectItem>
-                  <SelectItem value="N2">N2</SelectItem>
-                  <SelectItem value="N3">N3</SelectItem>
-                  <SelectItem value="N4">N4</SelectItem>
-                  <SelectItem value="N5">N5</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select
+            onValueChange={(isPublic) => {
+              setSearchParam({ isPublic, page: 1 });
+            }}
+            value={isPublic}
+          >
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={"all"}>All</SelectItem>
+                <SelectItem value="true">Public</SelectItem>
+                <SelectItem value="false">Not Public</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <Input
             className="w-[200px]"
             value={searchText}
@@ -222,25 +241,25 @@ export function Grammars() {
         className="h-[calc(100vh-213px)] overflow-auto"
       />
 
-      <UpsertGrammarModal
-        grammar={selectedGrammar}
+      <UpsertReadingModal
+        reading={selectedReading}
         open={openUpsertModal}
         onOpenChange={(open) => {
           setOpenUpsertModal(open);
-          setSelectedGrammar(null);
+          setSelectedReading(null);
         }}
         mutate={mutate}
-        onDeleteGrammar={() => {
+        onDeleteReading={() => {
           setOpenDeleteModal(true);
         }}
       />
 
-      <DeleteGrammarModal
-        grammar={selectedGrammar}
+      <DeleteReadingModal
+        reading={selectedReading}
         open={openDeleteModal}
         onOpenChange={(open) => {
           setOpenDeleteModal(open);
-          setSelectedGrammar(null);
+          setSelectedReading(null);
           if (openUpsertModal) {
             setOpenUpsertModal(false);
           }

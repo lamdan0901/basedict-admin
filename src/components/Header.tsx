@@ -16,9 +16,11 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between p-4 bg-gray-200">
       <div className="flex items-center">
-        <div className="font-bold">Logo</div>
+        <div className="font-bold">Base Dict Admin</div>
       </div>
-      <div className="font-bold">BaseDict {isLogin ? " logged in" : ""}</div>
+      <div className="font-bold">
+        You are {isLogin ? " logged in" : " not logged in"}
+      </div>
     </header>
   );
 };
