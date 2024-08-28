@@ -85,15 +85,16 @@ export function ReadingQuestionsForm() {
             </div>
           </div>
 
-          {/* {readingQuestions?.length > 1 && (   )}*/}
-          <Button
-            variant="ghost"
-            onClick={() => readingQuestionList.remove(i)}
-            size={"sm"}
-            className="absolute top-3 !p-2 right-3 rounded-full"
-          >
-            <Trash2 className="w-5 h-5 text-destructive" />
-          </Button>
+          {readingQuestions?.length > 1 && (
+            <Button
+              variant="ghost"
+              onClick={() => readingQuestionList.remove(i)}
+              size={"sm"}
+              className="absolute top-3 !p-2 right-3 rounded-full"
+            >
+              <Trash2 className="w-5 h-5 text-destructive" />
+            </Button>
+          )}
         </div>
       ))}
 
