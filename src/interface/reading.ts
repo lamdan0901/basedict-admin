@@ -18,5 +18,7 @@ type TReading = {
   grammars: string[];
   createdAt: string;
   updatedAt: string;
+  isJlpt: boolean;
+  examCode: number;
   readingQuestions: TReadingQuestion[];
 };
