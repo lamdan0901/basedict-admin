@@ -38,14 +38,14 @@ export function DataTableFilters() {
           }}
           value={examId}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={"all"}>All</SelectItem>
             {testPeriods.map((testPeriod) => (
               <SelectItem key={testPeriod.id} value={testPeriod.id.toString()}>
-                {testPeriod.title}
+                {testPeriod.title} - {testPeriod.jlptLevel}
               </SelectItem>
             ))}
           </SelectContent>
