@@ -59,7 +59,6 @@ export function DeleteReadingModal({
           Do you want to delete this reading?{" "}
           <ul>
             <li className="">Reading: {reading?.title}</li>
-            <li>Is Public: {reading?.public ? "True" : "False"}</li>
           </ul>
         </div>
         <DialogFooter className="sm:mt-6 fixed left-1/2 bottom-[20px] -translate-x-1/2 mt-3 sm:justify-center sm:space-x-4">
