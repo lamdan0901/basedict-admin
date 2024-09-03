@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -29,12 +28,10 @@ import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
-import {
-  jlptLevels,
-  readingTypes,
-  testPeriods,
-} from "@/modules/reading-list/const";
+import { jlptLevels, readingTypeMap } from "@/modules/reading-list/const";
 import { ReadingQuestionsForm } from "@/modules/reading-list/ReadingQuestionsForm";
+import useSWR from "swr";
+import { getRequest } from "@/service/data";
 
 type UpsertReadingModalProps = {
   reading: TReading | null;
@@ -59,7 +56,7 @@ export function UpsertReadingModal({
       ...defaultFormValues,
       readingQuestions: [
         {
-          text: "",
+          question: "",
           answers: [],
           correctAnswer: "",
           uuid: uuid(),
@@ -75,9 +72,11 @@ export function UpsertReadingModal({
     reset,
     formState: { errors },
   } = form;
-  const isJlpt = watch("isJlpt");
-  console.log("errors: ", errors);
 
+  const { data: testPeriods = [] } = useSWR<TTestPeriod[]>(
+    "/v1/exams/jlpt",
+    getRequest
+  );
   const { trigger: lexemePostTrigger, isMutating: isPostingLexeme } =
     useSWRMutation("/v1/admin/readings", postRequest);
   const { trigger: lexemePatchTrigger, isMutating: isPatchingLexeme } =
@@ -86,7 +85,6 @@ export function UpsertReadingModal({
 
   async function submitForm(data: TReadingFormData) {
     const lexemes = data.lexemes.split(",").map((item) => item.trim());
-    const grammars = data.grammars.split(",").map((item) => item.trim());
 
     data.readingQuestions.forEach((m) => {
       delete m.uuid;
@@ -95,9 +93,7 @@ export function UpsertReadingModal({
 
     const body = {
       ...data,
-      examCode: data.isJlpt ? +data.examCode : undefined,
       lexemes,
-      grammars,
     };
 
     try {
@@ -123,7 +119,7 @@ export function UpsertReadingModal({
         ...defaultFormValues,
         readingQuestions: [
           {
-            text: "",
+            question: "",
             answers: [],
             correctAnswer: "",
             uuid: uuid(),
@@ -138,7 +134,6 @@ export function UpsertReadingModal({
     if (reading)
       reset({
         ...reading,
-        grammars: reading.grammars.join(", "),
         lexemes: reading.lexemes.join(", "),
         readingQuestions: reading.readingQuestions.map((m) => ({
           ...m,
@@ -162,7 +157,7 @@ export function UpsertReadingModal({
           <form onSubmit={handleSubmit(submitForm)}>
             <div className="space-y-6 mb-4">
               <div className="flex w-full  gap-4">
-                <Controller
+                {/* <Controller
                   name="public"
                   control={control}
                   render={({ field }) => (
@@ -175,7 +170,7 @@ export function UpsertReadingModal({
                       />
                     </div>
                   )}
-                />
+                /> */}
                 <div className="flex items-center flex-[8] gap-4 w-full justify-between">
                   <Controller
                     name="readingType"
@@ -184,7 +179,6 @@ export function UpsertReadingModal({
                       <div className="flex flex-col flex-1 items-start space-y-2">
                         <Label htmlFor="public">Reading Type</Label>
                         <Select
-                          disabled={isJlpt}
                           onValueChange={(val) => field.onChange(+val)}
                           value={field.value.toString()}
                         >
@@ -192,14 +186,13 @@ export function UpsertReadingModal({
                             <SelectValue placeholder="All" />
                           </SelectTrigger>
                           <SelectContent>
-                            {readingTypes.map((type) => (
-                              <SelectItem
-                                key={type.value}
-                                value={type.value.toString()}
-                              >
-                                {type.title}
-                              </SelectItem>
-                            ))}
+                            {Object.entries(readingTypeMap).map(
+                              ([type, title]) => (
+                                <SelectItem key={type} value={type}>
+                                  {title}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
@@ -229,10 +222,31 @@ export function UpsertReadingModal({
                       </div>
                     )}
                   />
+                  <Controller
+                    name="source"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex flex-col flex-1 items-start space-y-2">
+                        <Label htmlFor="">Source</Label>
+                        <Select
+                          onValueChange={(val) => field.onChange(val)}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="All" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="JLPT">JLPT</SelectItem>
+                            <SelectItem value="BaseDict">BaseDict</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  />
                 </div>
               </div>
               <div className="flex w-full gap-4">
-                <Controller
+                {/* <Controller
                   name="isJlpt"
                   control={control}
                   render={({ field }) => (
@@ -245,15 +259,14 @@ export function UpsertReadingModal({
                       />
                     </div>
                   )}
-                />
-                <Controller
+                /> */}
+                {/* <Controller
                   name="examCode"
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col  flex-[4] items-start space-y-2">
                       <Label htmlFor="public">Test Period</Label>
                       <Select
-                        disabled={!isJlpt}
                         onValueChange={field.onChange}
                         value={field.value.toString()}
                       >
@@ -262,7 +275,7 @@ export function UpsertReadingModal({
                         </SelectTrigger>
                         <SelectContent>
                           {testPeriods.map((p) => (
-                            <SelectItem key={p.value} value={p.value}>
+                            <SelectItem key={p.id} value={p.id.toString()}>
                               {p.title}
                             </SelectItem>
                           ))}
@@ -270,7 +283,7 @@ export function UpsertReadingModal({
                       </Select>
                     </div>
                   )}
-                />
+                /> */}
                 <div className="flex-[4]"></div>
               </div>
             </div>
@@ -327,16 +340,6 @@ export function UpsertReadingModal({
                   id="Vocabulary"
                   className="col-span-3"
                   {...register("lexemes")}
-                />
-              </div>
-              <div className="grid grid-rows-2 items-center relative">
-                <Label htmlFor="grammar" className="text-left text-base">
-                  Grammar
-                </Label>
-                <Input
-                  id="grammar"
-                  className="col-span-3"
-                  {...register("grammars")}
                 />
               </div>
             </div>

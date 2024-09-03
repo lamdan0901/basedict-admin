@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const questionSchema = z.object({
-  text: z.string(),
+  question: z.string(),
   answers: z.array(z.string()),
   correctAnswer: z.string(),
   id: z.any().optional(),
@@ -18,29 +18,27 @@ export const readingSchema = z.object({
   japanese: z.string().min(1, { message: "Japanese is required" }),
   vietnamese: z.string().min(1, { message: "Vietnamese is required" }),
   lexemes: z.string(),
-  grammars: z.string(),
-  readingType: z.number(),
+  readingType: z.string(),
   jlptLevel: z.string(),
-  public: z.boolean().default(false),
-  isJlpt: z.boolean().default(false),
-  examCode: z.any(),
+  source: z.string(),
   topic: z.string(),
+  // isJlpt: z.boolean().default(false),
+  // public: z.boolean().default(false),
 });
 
 export type TQuestionFormData = z.infer<typeof questionSchema>;
 export type TReadingFormData = z.infer<typeof readingSchema>;
 
 export const defaultFormValues = {
+  // public: true,
+  // isJlpt: false,
   title: "",
   japanese: "",
   vietnamese: "",
-  public: true,
   jlptLevel: "N3",
-  readingType: 1,
-  isJlpt: false,
-  examCode: "1",
+  readingType: "SumaryReading",
   topic: "",
-  grammars: "",
   lexemes: "",
   meaning: [],
+  source: "BaseDict",
 };

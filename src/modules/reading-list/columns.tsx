@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { readingTypeMap, testPeriodsMap } from "@/modules/reading-list/const";
+import { readingTypeMap } from "@/modules/reading-list/const";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, SquarePen, Trash2 } from "lucide-react";
 
@@ -100,7 +100,7 @@ export const getColumns = (
     cell: ({ row }) => <div className="pl-3">{row.original.jlptLevel}</div>,
   },
   {
-    accessorKey: "isJlpt",
+    accessorKey: "source",
     header: ({ column }) => {
       return (
         <Button
@@ -108,37 +108,31 @@ export const getColumns = (
           size={"sm"}
           onClick={() => column.toggleSorting()}
         >
-          Jlpt Test Period
+          Source
           {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="pl-3">
-        {row.original.isJlpt
-          ? testPeriodsMap[row.original.examCode]
-          : "Not Jlpt Test"}
-      </div>
-    ),
+    cell: ({ row }) => <div className="pl-3">{row.original.source}</div>,
   },
-  {
-    accessorKey: "public",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          size={"sm"}
-          onClick={() => column.toggleSorting()}
-        >
-          Is Public
-          {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="pl-3">
-        {row.original.public ? "Public" : "Not Public"}
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "public",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         size={"sm"}
+  //         onClick={() => column.toggleSorting()}
+  //       >
+  //         Is Public
+  //         {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
+  //       </Button>
+  //     );
+  //   },
+  // cell: ({ row }) => (
+  //   <div className="pl-3">
+  //     {row.original.public ? "Public" : "Not Public"}
+  //   </div>
+  // ),
+  // },
 ];

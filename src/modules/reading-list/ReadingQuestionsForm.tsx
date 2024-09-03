@@ -39,11 +39,12 @@ export function ReadingQuestionsForm() {
               maxLength={255}
               id="question"
               className="col-span-3"
-              {...register(`readingQuestions.${i}.text`)}
+              {...register(`readingQuestions.${i}.question`)}
             />
             <p className="text-destructive text-sm absolute -bottom-5 left-0">
-              {(errors.readingQuestions?.[i]?.text?.message as string | null) ??
-                ""}
+              {(errors.readingQuestions?.[i]?.question?.message as
+                | string
+                | null) ?? ""}
             </p>
           </div>
           <div className="grid flex-1 grid-rows-2 items-center relative">
@@ -102,7 +103,7 @@ export function ReadingQuestionsForm() {
         <Button
           onClick={() =>
             readingQuestionList.append({
-              text: "",
+              question: "",
               answers: [],
               correctAnswer: "",
               uuid: uuid(),

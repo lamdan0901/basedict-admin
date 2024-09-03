@@ -21,15 +21,15 @@ export function ReadingList() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedReading, setSelectedReading] = useState<TReading | null>(null);
 
+  // const isPublic = searchParams.get("isPublic") ?? "all";
   const search = searchParams.get("search") ?? "";
-  const isPublic = searchParams.get("isPublic") ?? "all";
   const offset = searchParams.get("page") ?? 1;
   const limit = Number(searchParams.get("per_page") ?? 10);
   const [sort, orderDirection] = searchParams.get("sort")?.split(".") ?? [];
   const jlptLevel = searchParams.get("jlptLevel") ?? "all";
   const readingType = searchParams.get("readingType") ?? "all";
-  const examCode = searchParams.get("examCode") ?? "all";
-  const isJlpt = searchParams.get("isJlpt") ?? "all";
+  const examId = searchParams.get("examId") ?? "all";
+  const source = searchParams.get("source") ?? "all";
 
   const { data, isLoading, mutate } = useSWR<{
     data: TReading[];
@@ -41,9 +41,9 @@ export function ReadingList() {
       limit,
       sort,
       orderDirection,
-      isPublic: isPublic === "all" ? undefined : isPublic,
-      isJlpt: isJlpt === "all" ? undefined : isJlpt,
-      examCode: examCode === "all" ? undefined : examCode,
+      // isPublic: isPublic === "all" ? undefined : isPublic,
+      source: source === "all" ? undefined : source,
+      examId: examId === "all" ? undefined : examId,
       readingType: readingType === "all" ? undefined : readingType,
       jlptLevel: jlptLevel === "all" ? undefined : jlptLevel,
     })}`,
