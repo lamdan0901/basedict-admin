@@ -27,7 +27,7 @@ export enum ReadingType {
   MediumReading = "MediumReading",
   LongReading = "LongReading",
   CompareReading = "CompareReading",
-  NoticeReading = "NoticeReading",
+  NoticeReaing = "NoticeReaing",
 }
 
 export const readingTypeMap: Record<ReadingType, string> = {
@@ -36,5 +36,5 @@ export const readingTypeMap: Record<ReadingType, string> = {
   [ReadingType.MediumReading]: "Bài đọc trung bình",
   [ReadingType.LongReading]: "Bài đọc dài",
   [ReadingType.CompareReading]: "Bài đọc so sánh",
-  [ReadingType.NoticeReading]: "Bài đọc bảng biểu",
+  [ReadingType.NoticeReaing]: "Bài đọc bảng biểu",
 };

@@ -4,7 +4,7 @@ type TReadingType =
   | "MediumReading"
   | "LongReading"
   | "CompareReading"
-  | "NoticeReading";
+  | "NoticeReaing";
 
 type TTestSource = "JLPT" | "BaseDict";
 

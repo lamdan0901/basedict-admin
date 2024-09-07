@@ -30,8 +30,6 @@ import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 import { jlptLevels, readingTypeMap } from "@/modules/reading-list/const";
 import { ReadingQuestionsForm } from "@/modules/reading-list/ReadingQuestionsForm";
-import useSWR from "swr";
-import { getRequest } from "@/service/data";
 
 type UpsertReadingModalProps = {
   reading: TReading | null;
@@ -68,15 +66,10 @@ export function UpsertReadingModal({
     control,
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors },
   } = form;
 
-  const { data: testPeriods = [] } = useSWR<TTestPeriod[]>(
-    "/v1/exams/jlpt",
-    getRequest
-  );
   const { trigger: lexemePostTrigger, isMutating: isPostingLexeme } =
     useSWRMutation("/v1/admin/readings", postRequest);
   const { trigger: lexemePatchTrigger, isMutating: isPatchingLexeme } =
@@ -157,20 +150,6 @@ export function UpsertReadingModal({
           <form onSubmit={handleSubmit(submitForm)}>
             <div className="space-y-6 mb-4">
               <div className="flex w-full  gap-4">
-                {/* <Controller
-                  name="public"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex shrink-0 flex-[2] flex-col items-start space-y-2">
-                      <Label htmlFor="public">Is Public</Label>
-                      <Switch
-                        id="public"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  )}
-                /> */}
                 <div className="flex items-center flex-[8] gap-4 w-full justify-between">
                   <Controller
                     name="readingType"
@@ -179,8 +158,8 @@ export function UpsertReadingModal({
                       <div className="flex flex-col flex-1 items-start space-y-2">
                         <Label htmlFor="public">Reading Type</Label>
                         <Select
-                          onValueChange={(val) => field.onChange(+val)}
-                          value={field.value.toString()}
+                          onValueChange={field.onChange}
+                          value={field.value}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="All" />
@@ -244,47 +223,6 @@ export function UpsertReadingModal({
                     )}
                   />
                 </div>
-              </div>
-              <div className="flex w-full gap-4">
-                {/* <Controller
-                  name="isJlpt"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex flex-col  flex-[2] items-start space-y-2">
-                      <Label htmlFor="isJlpt">Is JLPT</Label>
-                      <Switch
-                        id="isJlpt"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  )}
-                /> */}
-                {/* <Controller
-                  name="examCode"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex flex-col  flex-[4] items-start space-y-2">
-                      <Label htmlFor="public">Test Period</Label>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value.toString()}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="All" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {testPeriods.map((p) => (
-                            <SelectItem key={p.id} value={p.id.toString()}>
-                              {p.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                /> */}
-                <div className="flex-[4]"></div>
               </div>
             </div>
 
