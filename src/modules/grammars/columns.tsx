@@ -1,12 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { readingTypeMap } from "@/modules/reading-list/const";
 import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 import { ArrowUpDown, SquarePen, Trash2 } from "lucide-react";
 
 export const getColumns = (
-  onEdit: (data: TReading) => void,
-  onDelete: (data: TReading) => void
-): ColumnDef<TReading>[] => [
+  onEdit: (data: TGrammar) => void,
+  onDelete: (data: TGrammar) => void
+): ColumnDef<TGrammar>[] => [
   {
     accessorKey: "action",
     header: () => {
@@ -38,50 +37,30 @@ export const getColumns = (
     ),
   },
   {
-    accessorKey: "title",
+    accessorKey: "grammar",
     header: () => {
       return (
         <div className="">
           <Button variant="ghost" size={"sm"}>
-            Title
+            Grammar
           </Button>
         </div>
       );
     },
-    cell: ({ row }) => (
-      <div className="pl-3 min-w-[100px]">{row.original.title}</div>
-    ),
+    cell: ({ row }) => <div className="pl-3">{row.original.grammar}</div>,
   },
   {
-    accessorKey: "content",
+    accessorKey: "meaning",
     header: () => {
       return (
-        <Button variant="ghost" size={"sm"}>
-          Content
-        </Button>
+        <div className="">
+          <Button variant="ghost" size={"sm"}>
+            Meaning
+          </Button>
+        </div>
       );
     },
-    cell: ({ row }) => (
-      <div className="max-w-[500px] truncate pl-3">{row.original.japanese}</div>
-    ),
-  },
-  {
-    accessorKey: "readingType",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          size={"sm"}
-          onClick={() => column.toggleSorting()}
-        >
-          Reading Type
-          {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="pl-3">{readingTypeMap[row.original.readingType]}</div>
-    ),
+    cell: ({ row }) => <div className="pl-3">{row.original.meaning}</div>,
   },
   {
     accessorKey: "jlptLevel",
@@ -92,27 +71,11 @@ export const getColumns = (
           size={"sm"}
           onClick={() => column.toggleSorting()}
         >
-          Jlpt Level
+          jlptLevel
           {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
         </Button>
       );
     },
     cell: ({ row }) => <div className="pl-3">{row.original.jlptLevel}</div>,
-  },
-  {
-    accessorKey: "source",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          size={"sm"}
-          onClick={() => column.toggleSorting()}
-        >
-          Source
-          {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="pl-3">{row.original.source}</div>,
   },
 ];

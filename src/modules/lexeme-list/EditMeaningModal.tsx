@@ -16,12 +16,16 @@ import { meaningSchema, TMeaningFormData } from "@/modules/lexeme-list/schemas";
 import { z } from "zod";
 import { patchRequest } from "@/service/data";
 import { MeaningForm } from "@/modules/lexeme-list/MeaningForm";
+import { KeyedMutator } from "swr";
 
 type EditMeaningModalProps = {
   open: boolean;
   onOpenChange(open: boolean): void;
   lexeme: TLexeme | null;
-  mutate: any;
+  mutate: KeyedMutator<{
+    data: TLexeme[];
+    total: number;
+  }>;
 };
 
 export function EditMeaningModal({

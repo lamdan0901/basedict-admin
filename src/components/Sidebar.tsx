@@ -9,6 +9,7 @@ import {
   Album,
   BookOpenText,
   CircleUserRound,
+  FileQuestion,
   House,
   LogOut,
   Menu,
@@ -64,7 +65,7 @@ const Sidebar = () => {
         >
           <Store />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
-            Lexeme list
+            Lexeme List
           </span>
         </Link>
         <Link
@@ -76,7 +77,7 @@ const Sidebar = () => {
         >
           <NotebookPen />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
-            Grammar list
+            Grammar List
           </span>
         </Link>
         <Link
@@ -88,7 +89,19 @@ const Sidebar = () => {
         >
           <BookOpenText />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
-            Reading list
+            Reading List
+          </span>
+        </Link>
+        <Link
+          href="/question-master"
+          className={cn(
+            "p-4 gap-2 flex items-center hover:bg-gray-200",
+            !isSidebarOpen ? "justify-center" : ""
+          )}
+        >
+          <FileQuestion />
+          <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
+            Question Master
           </span>
         </Link>
         <Link
@@ -100,7 +113,7 @@ const Sidebar = () => {
         >
           <CircleUserRound />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
-            Account list
+            Account List
           </span>
         </Link>
         <Link
@@ -112,7 +125,7 @@ const Sidebar = () => {
         >
           <Album />
           <span className={cn(isSidebarOpen ? "inline" : "hidden")}>
-            Report list
+            Report List
           </span>
         </Link>
       </nav>
