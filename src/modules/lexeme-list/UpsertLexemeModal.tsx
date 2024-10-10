@@ -21,6 +21,7 @@ import { patchRequest, postRequest } from "@/service/data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import { KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
@@ -29,7 +30,10 @@ type UpsertLexemeModalProps = {
   open: boolean;
   onOpenChange(open: boolean): void;
   onDeleteLexeme(): void;
-  mutate: any;
+  mutate: KeyedMutator<{
+    data: TLexeme[];
+    total: number;
+  }>;
 };
 
 export function UpsertLexemeModal({

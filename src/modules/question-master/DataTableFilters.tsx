@@ -1,55 +1,29 @@
-import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { jlptLevels, readingTypeMap } from "@/modules/reading-list/const";
+import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
+import { questionTypes } from "@/modules/question-master/const";
+import { jlptLevels } from "@/modules/reading-list/const";
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
-import { getRequest } from "@/service/data";
+import { useState } from "react";
 
 export function DataTableFilters() {
   const searchParams = useSearchParams();
   const setSearchParam = useUrlSearchParams();
+  const [searchText, setSearchText] = useState("");
 
-  const { data: testPeriods = [] } = useSWR<TTestPeriod[]>(
-    "/v1/exams/jlpt",
-    getRequest
-  );
-
-  const examId = searchParams.get("examId") ?? "all";
-  const search = searchParams.get("search") ?? "";
-  const jlptLevel = searchParams.get("jlptLevel") ?? "all";
-  const readingType = searchParams.get("readingType") ?? "all";
+  const jlptLevel = searchParams.get("jlptLevel") ?? "N3";
+  const type = searchParams.get("type") ?? "all";
   const source = searchParams.get("source") ?? "all";
 
   return (
     <div className="flex items-end gap-4">
-      <div className="space-y-1">
-        <div>Exam</div>
-        <Select
-          onValueChange={(examId) => {
-            setSearchParam({ examId, page: 1 });
-          }}
-          value={examId}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={"all"}>All</SelectItem>
-            {testPeriods.map((testPeriod) => (
-              <SelectItem key={testPeriod.id} value={testPeriod.id.toString()}>
-                {testPeriod.title} - {testPeriod.jlptLevel}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
       <div className="space-y-1">
         <div>Source</div>
         <Select
@@ -71,49 +45,52 @@ export function DataTableFilters() {
       <div className="space-y-1">
         <div>Reading Type</div>
         <Select
-          onValueChange={(readingType) => {
-            setSearchParam({ readingType, page: 1 });
+          onValueChange={(type) => {
+            setSearchParam({ type, page: 1 });
           }}
-          value={readingType}
+          value={type}
         >
           <SelectTrigger className="w-[170px]">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={"all"}>All</SelectItem>
-            {Object.entries(readingTypeMap).map(([type, title]) => (
+            {questionTypes.map((type) => (
               <SelectItem key={type} value={type}>
-                {title}
+                {type}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-1">
-        <div>JLPT Level</div>
+        <label>Jlpt Level</label>
         <Select
           onValueChange={(jlptLevel) => {
             setSearchParam({ jlptLevel, page: 1 });
           }}
           value={jlptLevel}
         >
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={"all"}>All</SelectItem>
-            {jlptLevels.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                {level.title}
-              </SelectItem>
-            ))}
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {jlptLevels.map(({ value }) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <Input
         className="w-[200px]"
-        value={search}
+        value={searchText}
         onChange={(e) => {
+          setSearchText(e.target.value);
           setSearchParam({ search: e.target.value, page: 1 });
         }}
         type="search"

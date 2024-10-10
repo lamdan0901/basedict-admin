@@ -12,41 +12,41 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { KeyedMutator } from "swr";
 
-type DeleteReadingModalProps = {
+type DeleteQuestionModalProps = {
   open: boolean;
   onOpenChange(open: boolean): void;
-  reading: TReading | null;
+  question: TQuestionMaster | null;
   mutate: KeyedMutator<{
-    data: TReading[];
+    data: TQuestionMaster[];
     total: number;
   }>;
   id?: string;
 };
 
-export function DeleteReadingModal({
+export function DeleteQuestionModal({
   mutate,
-  reading,
+  question,
   open,
   onOpenChange,
-}: DeleteReadingModalProps) {
+}: DeleteQuestionModalProps) {
   const { toast } = useToast();
-  const { trigger: readingDeleteTrigger, isMutating: isDeletingReading } =
-    useSWRMutation(`/v1/admin/readings/${reading?.id}`, deleteRequest);
+  const { trigger: deleteQuestion, isMutating: isDeletingQuestion } =
+    useSWRMutation(`/v1/admin/question-masters/${question?.id}`, deleteRequest);
 
-  async function deleteReading() {
+  async function deleteGrammar() {
     try {
-      await readingDeleteTrigger();
+      await deleteQuestion();
       toast({
-        title: "Reading deleted",
+        title: "Deleted",
       });
       onOpenChange(false);
       mutate();
     } catch (err) {
       toast({
-        title: "Cannot delete reading, please try again",
+        title: "Cannot delete, please try again",
         variant: "destructive",
       });
-      console.error("err deleteReading: ", err);
+      console.error("err : ", err);
     }
   }
 
@@ -57,25 +57,24 @@ export function DeleteReadingModal({
         className="lg:min-w-[425px] w-full !pb-[80px] max-h-[100dvh] sm:min-w-[825px] min-w-full"
       >
         <DialogHeader>
-          <DialogTitle>Delete Reading</DialogTitle>
+          <DialogTitle>Delete question master </DialogTitle>
         </DialogHeader>
         <div>
-          Do you want to delete this reading?{" "}
-          <ul>
-            <li className="">Reading: {reading?.title}</li>
-          </ul>
+          Do you want to delete this question?
+          <br />
+          Question: <span className="font-medium">{question?.question}</span>
         </div>
         <DialogFooter className="sm:mt-6 fixed left-1/2 bottom-[20px] -translate-x-1/2 mt-3 sm:justify-center sm:space-x-4">
           <Button
             type="button"
-            disabled={isDeletingReading}
+            disabled={isDeletingQuestion}
             variant={"destructive"}
-            onClick={deleteReading}
+            onClick={deleteGrammar}
           >
             Delete
           </Button>
           <Button
-            disabled={isDeletingReading}
+            disabled={isDeletingQuestion}
             onClick={() => onOpenChange(false)}
             type="button"
             variant={"outline"}

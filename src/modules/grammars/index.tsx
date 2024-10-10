@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/select";
 import { useDataTable } from "@/hooks/useDataTable";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { stringifyParams } from "@/lib/utils";
+import { calculateTotalPages, stringifyParams } from "@/lib/utils";
+import { getColumns } from "@/modules/grammars/columns";
 import { DeleteGrammarModal } from "@/modules/grammars/DeleteGrammarModal";
 import { UpsertGrammarModal } from "@/modules/grammars/UpsertGrammarModal";
 import { getRequest } from "@/service/data";
@@ -27,7 +28,7 @@ export function Grammars() {
   const searchParams = useSearchParams();
   const setSearchParam = useUrlSearchParams();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [idsSelected, selectedIds] = useState<string[]>([]);
+  // const [idsSelected, selectedIds] = useState<string[]>([]);
   const [openUpsertModal, setOpenUpsertModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedGrammar, setSelectedGrammar] = useState<TGrammar | null>(null);
@@ -56,82 +57,16 @@ export function Grammars() {
   const grammarList = data?.data ?? [];
   const total = data?.total ?? 0;
 
-  const columns: ColumnDef<TGrammar>[] = [
-    {
-      accessorKey: "action",
-      header: ({ column }) => {
-        return <div className="text-center w-[80px]">Actions</div>;
-      },
-      cell: ({ row }) => (
-        <div className="flex gap-2 w-[80px]">
-          <Button
-            onClick={() => {
-              setSelectedGrammar(row.original);
-              setOpenUpsertModal(true);
-            }}
-            variant="ghost"
-            size={"sm"}
-            className="mr-auto px-2"
-          >
-            <SquarePen className="w-5 h-5" />
-          </Button>
-          <Button
-            onClick={() => {
-              setSelectedGrammar(row.original);
-              setOpenDeleteModal(true);
-            }}
-            variant="ghost"
-            size={"sm"}
-            className="mr-auto px-2"
-          >
-            <Trash2 className="w-5 h-5 text-destructive" />
-          </Button>
-        </div>
-      ),
+  const columns = getColumns(
+    (data: TGrammar) => {
+      setSelectedGrammar(data);
+      setOpenUpsertModal(true);
     },
-    {
-      accessorKey: "grammar",
-      header: ({ column }) => {
-        return (
-          <div className="">
-            <Button variant="ghost" size={"sm"}>
-              Grammar
-            </Button>
-          </div>
-        );
-      },
-      cell: ({ row }) => <div className="pl-3">{row.original.grammar}</div>,
-    },
-    {
-      accessorKey: "meaning",
-      header: ({ column }) => {
-        return (
-          <div className="">
-            <Button variant="ghost" size={"sm"}>
-              Meaning
-            </Button>
-          </div>
-        );
-      },
-      cell: ({ row }) => <div className="pl-3">{row.original.meaning}</div>,
-    },
-    {
-      accessorKey: "jlptLevel",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            size={"sm"}
-            onClick={() => column.toggleSorting()}
-          >
-            jlptLevel
-            {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div className="pl-3">{row.original.jlptLevel}</div>,
-    },
-  ];
+    (data: TGrammar) => {
+      setSelectedGrammar(data);
+      setOpenDeleteModal(true);
+    }
+  );
 
   const { table } = useDataTable({
     data: grammarList,
@@ -144,24 +79,19 @@ export function Grammars() {
     },
   });
 
-  function calculateTotalPages(totalRecords: number, rowsPerPage: number) {
-    if (rowsPerPage === 0) return 1;
-    return Math.ceil(totalRecords / rowsPerPage);
-  }
+  // function afterDeleteIds(articleIds: string[]) {
+  //   const articleIndexes = [1, 2, 3];
 
-  function afterDeleteIds(articleIds: string[]) {
-    const articleIndexes = [1, 2, 3];
-
-    setRowSelection((prev) => {
-      articleIndexes.forEach((i) => {
-        delete prev[i];
-      });
-      return { ...prev };
-    });
-    selectedIds((prev) =>
-      prev.filter((currentId) => !articleIds.includes(currentId))
-    );
-  }
+  //   setRowSelection((prev) => {
+  //     articleIndexes.forEach((i) => {
+  //       delete prev[i];
+  //     });
+  //     return { ...prev };
+  //   });
+  //   selectedIds((prev) =>
+  //     prev.filter((currentId) => !articleIds.includes(currentId))
+  //   );
+  // }
 
   return (
     <div>
@@ -173,9 +103,9 @@ export function Grammars() {
           <Button onClick={() => setOpenUpsertModal(true)} className="">
             Add new Grammar
           </Button>
-          {idsSelected.length > 0 && (
+          {/* {idsSelected.length > 0 && (
             <Button variant={"destructive"}>Delete Grammar</Button>
-          )}
+          )} */}
         </div>
 
         <div className="flex gap-4">
