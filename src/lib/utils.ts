@@ -40,3 +40,8 @@ function extractKanji(word: string): string[] {
 
   return kanjiArray || [];
 }
+
+export function calculateTotalPages(totalRecords: number, rowsPerPage: number) {
+  if (rowsPerPage === 0) return 1;
+  return Math.ceil(totalRecords / rowsPerPage);
+}

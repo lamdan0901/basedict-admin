@@ -10,12 +10,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { KeyedMutator } from "swr";
 
 type DeleteLexemeModalProps = {
   open: boolean;
   onOpenChange(open: boolean): void;
   lexeme: TLexeme | null;
-  mutate: any;
+  mutate: KeyedMutator<{
+    data: TLexeme[];
+    total: number;
+  }>;
   id?: string;
 };
 

@@ -30,13 +30,17 @@ import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 import { jlptLevels, readingTypeMap } from "@/modules/reading-list/const";
 import { ReadingQuestionsForm } from "@/modules/reading-list/ReadingQuestionsForm";
+import { KeyedMutator } from "swr";
 
 type UpsertReadingModalProps = {
   reading: TReading | null;
   open: boolean;
   onOpenChange(open: boolean): void;
   onDeleteReading(): void;
-  mutate: any;
+  mutate: KeyedMutator<{
+    data: TReading[];
+    total: number;
+  }>;
 };
 
 export function UpsertReadingModal({

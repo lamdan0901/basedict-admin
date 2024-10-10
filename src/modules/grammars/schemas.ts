@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-enum JlptLevelEnum {
-  N1 = 'N1',
-  N2 = 'N2',
-  N3 = 'N3',
-  N4 = 'N4',
-  N5 = 'N5',
-}
-
-
 export const grammarSchema = z.object({
   id: z.string().optional(),
   grammar: z
@@ -23,16 +14,10 @@ export const grammarSchema = z.object({
     .string()
     .min(1, { message: "Structure is required" })
     .max(255, { message: "Structure must not exceed 255 characters" }),
-  summary: z
-    .string()
-    .min(1, { message: "summary is required" }),
-  detail: z
-    .string()
-    .min(1, { message: "Details is required" }),
-  jlptLevel: z
-    .nativeEnum(JlptLevelEnum),
-  similars: z
-    .string(),
+  summary: z.string().min(1, { message: "summary is required" }),
+  detail: z.string().min(1, { message: "Details is required" }),
+  jlptLevel: z.string(),
+  similars: z.string(),
 });
 
 export type TGrammarFormData = z.infer<typeof grammarSchema>;
@@ -43,5 +28,5 @@ export const defaultFormValues = {
   summary: "",
   structure: "",
   detail: "",
-  jlptLevel: JlptLevelEnum.N3,
+  jlptLevel: "N3",
 };
